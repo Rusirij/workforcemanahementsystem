@@ -1,5 +1,6 @@
 package com.group1.schedhub.entity;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,5 +32,8 @@ public class Employee {
 
     @Column(name="email_id", nullable = false, unique = true)
     private String email;
+
+    @Column(name="password", nullable = false)
+    private String password;
     
 }

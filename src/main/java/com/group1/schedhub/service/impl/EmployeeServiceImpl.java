@@ -22,9 +22,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
-        System.out.println(employeeDto.toString());
         Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
-        System.out.println(employee.toString());
         Employee savedEmployee = employeeRepository.save(employee);
         return EmployeeMapper.mapToEmployeeDto(savedEmployee);
     }
@@ -66,6 +64,17 @@ public class EmployeeServiceImpl implements EmployeeService{
 
         employeeRepository.deleteById(employeeId);
 
+    }
+
+    @Override
+    public EmployeeDto validateEmpLogin(String email, String password) {
+        Employee employee = employeeRepository.findByEmailAndPassword(email, password);
+        if (employee != null) {
+            return EmployeeMapper.mapToEmployeeDto(employee);
+        } else {
+            return null;
+        }
+    
     }
     
 }

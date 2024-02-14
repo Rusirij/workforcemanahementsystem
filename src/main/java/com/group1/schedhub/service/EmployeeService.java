@@ -15,4 +15,6 @@ public interface EmployeeService {
     EmployeeDto updateEmployee(Long employeeId, EmployeeDto updatedEmployee);
 
     void deleteEmployee(long employeeId);
+
+    EmployeeDto validateEmpLogin(String email, String password);
 }
