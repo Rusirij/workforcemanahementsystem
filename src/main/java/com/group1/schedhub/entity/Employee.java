@@ -35,5 +35,8 @@ public class Employee {
 
     @Column(name="password", nullable = false)
     private String password;
+
+    @Column(name="employee_type", nullable = false)
+    private String employeeType;
     
 }

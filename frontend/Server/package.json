@@ -3,15 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "start:debug": "nodemon --inspect index.js"
+
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
