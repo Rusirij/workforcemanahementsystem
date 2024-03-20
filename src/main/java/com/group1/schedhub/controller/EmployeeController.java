@@ -1,6 +1,8 @@
 package com.group1.schedhub.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.group1.schedhub.dto.EmployeeDto;
 import com.group1.schedhub.service.EmployeeService;
@@ -26,9 +28,17 @@ import java.util.List;
 @RequestMapping("/api/employees")
 @CrossOrigin("http://localhost:5173")
 @AllArgsConstructor
-public class EmployeeController {
+public class EmployeeController implements WebMvcConfigurer {
 
     private EmployeeService employeeService;
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowCredentials(true);
+    }
     
     @PostMapping("/add")
     public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto) {
