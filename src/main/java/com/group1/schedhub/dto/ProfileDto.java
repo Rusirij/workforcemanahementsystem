@@ -11,12 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ProfileDto {
 
-    private Long empId;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String contactNo;
-    private String reportingTo;
+    private String employeeId;
+    private String employeeName;
     private String address;
+    private int maxHoursPerWeek;
+    private String availability;
+    private String employeeType;
+
 
 }

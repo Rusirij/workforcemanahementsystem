@@ -9,12 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeDto {
+public class EmployeeCredentialsDto {
     
-    private Long id;
-    private String firstName;
-    private String lastName;
-    private String email;
+    private Integer loginId; 
+    private String employeeId;
+    private String employeeEmail;
+    private String username;
     private String password;
     private String employeeType;
 
