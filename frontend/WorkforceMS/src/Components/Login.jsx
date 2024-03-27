@@ -34,11 +34,11 @@ const Login = () => {
                     // Store empType in localStorage
                     localStorage.setItem('empType', empType);
 
-                    const empName = valuesArray[1];
+                    const empName = valuesArray[3];
                     console.log(empName);
                     localStorage.setItem('empName', empName);
 
-                    const empId = valuesArray[2];
+                    const empId = valuesArray[1];
                     console.log(empId);
                     localStorage.setItem('empId', empId);
 
@@ -59,7 +59,7 @@ const Login = () => {
                 <h2 className="text-center mb-4">Welcome To Schedhub</h2>
                 <form onSubmit={handleSubmit}>
                     <div className='mb-3'>
-                        <input type="email" name='email' autoComplete='off' placeholder='Enter Employee Number'
+                        <input type="email" name='email' autoComplete='off' placeholder='Enter Employee Email'
                             onChange={(e) => setValues({ ...values, email: e.target.value })} className='form-control rounded-0' />
                     </div>
                     <div className='mb-3'>

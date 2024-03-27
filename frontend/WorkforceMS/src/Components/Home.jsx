@@ -6,6 +6,20 @@ import "react-datepicker/dist/react-datepicker.css";
 
 
 const Home = () => {
+
+    const [profileData, setProfileData] = useState({
+        fullName: "",
+        // contactNo: "",
+        mailingAddress: ""
+        // email: "",
+        // jobDescription: "",
+        // reportTo: "",
+        // employeeStartDate: new Date()
+    });
+    const [empId, setEmpId] = useState('');
+
+
+
     const [homeList, setHomeList] = useState([]);
     const [selectedHome, setSelectedHome] = useState(null);
     const navigate = useNavigate();
@@ -60,6 +74,36 @@ const Home = () => {
     };
 
     useEffect(() => {
+
+        const empId = localStorage.getItem('empId');
+        setEmpId(empId);
+
+        // Function to fetch employee profile data
+        const fetchEmployeeProfile = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/employees/empProfile/` + empId);
+                const { data } = response;
+                // Update profileData state with received data
+                setProfileData({
+                    fullName: data.employeeName,
+                    // contactNo: data.contactNo,
+                    mailingAddress: data.address
+                    // email: data.email,
+                    // jobDescription: data.jobDescription,
+                    // reportTo: data.reportingTo,
+                    // employeeStartDate: new Date(data.employeeStartDate) // Assuming employeeStartDate is in ISO format
+                });
+            } catch (error) {
+                console.error("Error fetching employee profile:", error);
+            }
+        };
+
+        // Fetch employee profile data when component mounts
+        if (empId) {
+            fetchEmployeeProfile();
+        }
+
+
         // Clear the interval when the component unmounts
         return () => {
             clearInterval(timer);
@@ -100,7 +144,7 @@ const Home = () => {
                     <label htmlFor="fullName" className="form-label">
                         Full Name
                     </label>
-                    <input type="text" className="form-control" id="fullName" placeholder="Enter Full Name" />
+                    <input type="text" className="form-control" id="fullName" value={profileData.fullName} placeholder="Enter Full Name" />
 
                     <label htmlFor="contactNo" className="form-label">
                         Contact No.
@@ -110,7 +154,7 @@ const Home = () => {
                     <label htmlFor="mailingAddress" className="form-label">
                         Mailing Address
                     </label>
-                    <input type="text" className="form-control" id="mailingAddress" placeholder="Enter Mailing Address" />
+                    <input type="text" className="form-control" id="mailingAddress" value={profileData.mailingAddress} placeholder="Enter Mailing Address" />
 
                     <label htmlFor="email" className="form-label">
                         Email

@@ -17,26 +17,27 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "employees")
-public class Employee {
+@Table(name = "employeeCredential")
+public class EmployeeCredentials {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "loginid")
+    private Integer loginId;
 
-    @Column(name="first_name")
-    private String firstName;
+    @Column(name = "employeeid")
+    private String employeeId;
 
-    @Column(name="last_name")
-    private String lastName;
+    @Column(name = "employeeemail")
+    private String employeeEmail;
 
-    @Column(name="email_id", nullable = false, unique = true)
-    private String email;
+    @Column(name = "username")
+    private String username;
 
-    @Column(name="password", nullable = false)
+    @Column(name = "password")
     private String password;
 
-    @Column(name="employee_type", nullable = false)
+    @Column(name = "employeetype")
     private String employeeType;
     
 }

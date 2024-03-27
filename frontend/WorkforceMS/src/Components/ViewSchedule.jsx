@@ -2,7 +2,7 @@ import React from 'react'
 
 const ViewSchedule = () => {
     return (
-        <div>ViewSchedule</div>
+        <h3>Schedule</h3>
     )
 }
 

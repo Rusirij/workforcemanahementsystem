@@ -4,8 +4,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.group1.schedhub.dto.EmployeeDto;
-import com.group1.schedhub.service.EmployeeService;
+import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.ProfileDto;
+import com.group1.schedhub.service.EmployeeCredentialsService;
 
 import lombok.AllArgsConstructor;
 
@@ -30,7 +31,7 @@ import java.util.List;
 @AllArgsConstructor
 public class EmployeeController implements WebMvcConfigurer {
 
-    private EmployeeService employeeService;
+    private EmployeeCredentialsService employeeService;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -40,45 +41,17 @@ public class EmployeeController implements WebMvcConfigurer {
                 .allowCredentials(true);
     }
     
-    @PostMapping("/add")
-    public ResponseEntity<EmployeeDto> createEmployee(@RequestBody EmployeeDto employeeDto) {
-        EmployeeDto savedEmployee = employeeService.createEmployee(employeeDto);
-        return new ResponseEntity<>(savedEmployee, HttpStatus.CREATED);
-    }
-
-    //Buid get employee rest api
-    @GetMapping("{id}")    
-    public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable("id") Long employeeId) {
-        EmployeeDto employeeDto = employeeService.getEmployeeById(employeeId);
-        return ResponseEntity.ok(employeeDto);
-    }
-
-    @GetMapping("/allEmployees")
-    public ResponseEntity<List<EmployeeDto>> getAllEmployees() {
-        List<EmployeeDto> employees = employeeService.getAllEmployees();
-        return ResponseEntity.ok(employees);
-    }
-
-    //Build Update employee rest api
-    @PutMapping("/updateEmp/{id}")
-    public ResponseEntity<EmployeeDto> updateEmployee(@PathVariable("id") Long employeeId, @RequestBody EmployeeDto updateEmployee) {
-        EmployeeDto employees = employeeService.updateEmployee(employeeId, updateEmployee);
-        
-        return ResponseEntity.ok(employees);
-    }
-
-    //Build Delete Employee REST API
-    @DeleteMapping("/deleteEmp/{id}")
-    public ResponseEntity<String> deleteEmployee(@PathVariable("id") Long employeeId) {
-        employeeService.deleteEmployee(employeeId);
-        return ResponseEntity.ok("Employee deleted successfully!");
-
-    }
 
     @GetMapping("/empLogin/{email_id}/{password}")    
-    public ResponseEntity<EmployeeDto> getEmployeeEmailPassword(@PathVariable("email_id") String emailId, @PathVariable("password") String password) {
-        EmployeeDto employeeDto = employeeService.validateEmpLogin(emailId, password);
+    public ResponseEntity<EmployeeCredentialsDto> getEmployeeEmailPassword(@PathVariable("email_id") String emailId, @PathVariable("password") String password) {
+        EmployeeCredentialsDto employeeDto = employeeService.validateEmpLogin(emailId, password);
         return ResponseEntity.ok(employeeDto);
+    }
+
+    @GetMapping("/empProfile/{employeeId}")    
+    public ResponseEntity<ProfileDto> getProfile(@PathVariable("employeeId") String employeeId) {
+        ProfileDto profileDto = employeeService.getEmployeProfile(employeeId);
+        return ResponseEntity.ok(profileDto);
     }
     
 }
