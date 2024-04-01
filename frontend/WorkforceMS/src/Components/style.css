@@ -22,3 +22,47 @@
 
   color: white;
 }
+
+.availability_container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.availability_heading {
+  text-align: center;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.availability_dayContainer {
+  margin-bottom: 15px;
+}
+
+.availability_label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #666;
+}
+
+.availability_select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+}
+
+.availability_submitButton {
+  width: 100%;
+  padding: 10px;
+  border-radius: 3px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}

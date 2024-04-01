@@ -17,6 +17,8 @@ public class ProfileDto {
     private int maxHoursPerWeek;
     private String availability;
     private String employeeType;
+    private int hourlyRate;
+    private String contactNo;
 
 
 }
