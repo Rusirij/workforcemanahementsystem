@@ -10,7 +10,9 @@ import ViewSchedule from './Components/ViewSchedule'
 import ApplyLeave from './Components/ApplyLeave'
 import Timesheet from './Components/Timesheet'
 import PayStub from './Components/PayStub'
+import Availability from './Components/Availability'
 import ForgotPasswrd from './Components/ForgotPasswrd'
+import SubmittedRequests from './Components/SubmittedRequests'
 
 import LeaveRequests from './Components/manager/LeaveRequests'
 import ManageEmployee from './Components/manager/ManageEmployee'
@@ -32,8 +34,11 @@ function App() {
           <Route path='/dashboard/timesheet' element={<Timesheet />}></Route>
           <Route path='/dashboard/apply_leave' element={<ApplyLeave />}></Route>
           <Route path='/dashboard/pay_stub' element={<PayStub />}></Route>
+          <Route path='/dashboard/availability' element={<Availability />}></Route>
           <Route path='/dashboard/profile' element={<Profile />}></Route>
           <Route path='/dashboard/add_employee' element={<AddEmployee />}></Route>
+          <Route path='/dashboard/apply_leave/submittedRequests' element={<SubmittedRequests />}></Route>
+
 
           <Route path='/dashboard/manager/schedule' element={<Schedule />}></Route>
           <Route path='/dashboard/manager/manage-employee' element={<ManageEmployee />}></Route>

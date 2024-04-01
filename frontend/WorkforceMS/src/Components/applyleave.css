@@ -1,0 +1,45 @@
+.leave-form {
+  margin: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+}
+
+select,
+textarea,
+input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.submit-button,
+.cancel-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-button {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336; /* Red */
+  color: white;
+  margin-right: 10px;
+}
+
+.button-group {
+  margin-top: 20px;
+}

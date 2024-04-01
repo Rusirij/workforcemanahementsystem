@@ -39,4 +39,9 @@ public class Profile {
     @Column(name = "employeetype", length = 50)
     private String employeeType;
 
+    @Column(name = "hourlyrate", nullable = false)
+    private int hourlyRate;
+
+    @Column(name = "contactno", length = 20)
+    private String contactNo;
 }

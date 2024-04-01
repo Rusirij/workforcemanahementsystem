@@ -37,7 +37,9 @@ public class EmployeeCredentialsMapper {
             profile.getAddress(),
             profile.getMaxHoursPerWeek(),
             profile.getAvailability(),
-            profile.getEmployeeType()
+            profile.getEmployeeType(),
+            profile.getHourlyRate(),
+            profile.getContactNo()
         );
     }
     
@@ -49,6 +51,8 @@ public class EmployeeCredentialsMapper {
         profile.setMaxHoursPerWeek(profileDto.getMaxHoursPerWeek());
         profile.setAvailability(profileDto.getAvailability());
         profile.setEmployeeType(profileDto.getEmployeeType());
+        profile.setContactNo(profileDto.getContactNo());
+        profile.setHourlyRate(profileDto.getHourlyRate());
     
         return profile;
     }
