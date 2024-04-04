@@ -13,7 +13,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+/**
+ * Represents an attendancerecord entity in the system.
+ * This class defines the structure and behavior of an attendancerecord object.
+ * 
+ * This entity is used for storing and managing attendancerecord information within the application.
+ * Additionally, it provides methods for accessing and manipulating attendancerecord data.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

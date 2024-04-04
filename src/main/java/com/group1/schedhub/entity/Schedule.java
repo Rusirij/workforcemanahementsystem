@@ -1,12 +1,10 @@
 package com.group1.schedhub.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,22 +24,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Availability")
-public class Availability {
-
-    @Id
+@Table(name = "scheduletemp")
+public class Schedule {
+   @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "availabilityid")
-    private String availabilityId;
+    @Column(name = "scheduleid")
+    private int scheduleId;
 
-    @Column(name = "dayofweek", nullable = false)
+    @Column(name = "employeename", length = 255)
+    private String employeeName;
+
+    @Column(name = "dayoftheweek", length = 20)
     private String dayOfWeek;
 
-    @Column(name = "availabilitystatus", nullable = false)
-    private String availabilityStatus;
-    
-    @Column(name = "employeeid")
-    private String employeeId;
-
+    @Column(name = "shifttype", length = 10)
+    private String shiftType;
     
 }

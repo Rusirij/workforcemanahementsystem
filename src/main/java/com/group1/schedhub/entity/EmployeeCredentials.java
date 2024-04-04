@@ -11,6 +11,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+/**
+ * Represents an employeeCredential entity in the system.
+ * This class defines the structure and behavior of an employeeCredential object.
+ * 
+ * This entity is used for storing and managing employeeCredential information within the application.
+ * Additionally, it provides methods for accessing and manipulating employeeCredential data.
+ */
 
 @Getter
 @Setter

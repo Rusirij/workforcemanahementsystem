@@ -11,6 +11,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+/**
+ * Represents an employees entity in the system.
+ * This class defines the structure and behavior of an employees object.
+ * 
+ * This entity is used for storing and managing employees information within the application.
+ * Additionally, it provides methods for accessing and manipulating employees data.
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,7 +29,6 @@ import lombok.Setter;
 public class Profile {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "employeeid")
     private String employeeId;
 
