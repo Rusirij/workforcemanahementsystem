@@ -14,7 +14,16 @@ import com.group1.schedhub.service.AvailabilityService;
 
 import lombok.AllArgsConstructor;
 
-
+/*
+ * SCHED Hub Service imp class where all the business logic is implemented 
+ * 
+ * 
+ * The record transactions are handled through jpa repositories
+ * 
+ * @author: Group 1
+ * Date: 03/04/2024
+ * 
+ */
 @Service
 @AllArgsConstructor
 public class AvailabilityServiceImpl implements AvailabilityService{
