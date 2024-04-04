@@ -24,7 +24,7 @@ Before the above steps make sure your back end is running by going to SchedhubAp
     ~\workforcemanahementsystem\src\main\java\com\group1\schedhub\SchedhubApplication.java
 
 
-Database used for this project is SSMS. When trying to connect to you own local database add the connection setting to application.properties file under src folder
+Database used for this project is SSMS. When trying to connect to you own local database add the connection setting to application.properties file under src, resources folder
      
      spring.datasource.url=jdbc:sqlserver://<<Servername>>;databaseName=Schedhub;encrypt=true;trustServerCertificate=true;
      spring.datasource.username=
