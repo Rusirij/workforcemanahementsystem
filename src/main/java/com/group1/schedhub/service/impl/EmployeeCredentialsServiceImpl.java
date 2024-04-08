@@ -5,22 +5,28 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 import com.group1.schedhub.entity.AttendanceRecord;
 import com.group1.schedhub.entity.EmployeeCredentials;
+import com.group1.schedhub.entity.LeaveRequest;
 import com.group1.schedhub.entity.Profile;
 import com.group1.schedhub.entity.Schedule;
 import com.group1.schedhub.exception.ResourceNotFoundException;
 import com.group1.schedhub.mapper.EmployeeCredentialsMapper;
 import com.group1.schedhub.repository.AttendanceRecordRepository;
 import com.group1.schedhub.repository.EmployeeCredentialsRepository;
+import com.group1.schedhub.repository.LeaveRequestRepository;
 import com.group1.schedhub.repository.ProfileRepository;
 import com.group1.schedhub.repository.ScheduleRepository;
 import com.group1.schedhub.service.EmployeeCredentialsService;
@@ -47,6 +53,8 @@ public class EmployeeCredentialsServiceImpl implements EmployeeCredentialsServic
     private AttendanceRecordRepository attendanceRecordRepository;
 
     private ScheduleRepository scheduleRepository;
+
+    private LeaveRequestRepository leaveRequestRepo;
 
 
 
@@ -130,11 +138,12 @@ public class EmployeeCredentialsServiceImpl implements EmployeeCredentialsServic
     }
 
     @Override
-    public void saveSchedule(String empName, int dayOfWeek, String shiftType) {
+    public void saveSchedule(String empId, String empName, int dayOfWeek, String shiftType) {
 
         String dayName = convertDayOfWeek(dayOfWeek);
 
         Schedule schedule = new Schedule();
+        schedule.setEmployeeId(empId);
         schedule.setEmployeeName(empName);
         schedule.setDayOfWeek(dayName);
         schedule.setShiftType(shiftType);
@@ -142,6 +151,19 @@ public class EmployeeCredentialsServiceImpl implements EmployeeCredentialsServic
         scheduleRepository.save(schedule);
     }
 
+    @Override
+    public Map<String, String> getShiftScheduleByEmployeeId(String employeeId) {
+        List<Schedule> shiftSchedules = scheduleRepository.findByEmployeeId(employeeId);
+        Map<String, String> scheduleMap = new HashMap<>();
+
+        for (Schedule shiftSchedule : shiftSchedules) {
+            String dayOfWeek = shiftSchedule.getDayOfWeek();
+            String shiftType = shiftSchedule.getShiftType();
+            scheduleMap.put(dayOfWeek, shiftType);
+        }
+
+        return scheduleMap;
+    }
 
     public static String convertDayOfWeek(int dayOfWeek) {
         String dayName;
@@ -172,6 +194,42 @@ public class EmployeeCredentialsServiceImpl implements EmployeeCredentialsServic
                 break;
         }
         return dayName;
+    }
+
+    @Override
+    public void saveLeave(LeaveRequestDto leaveRequestDTO) {
+        // Create LeaveRequest entity from DTO
+        LeaveRequest leaveRequest = new LeaveRequest();
+        leaveRequest.setEmployeeId(leaveRequestDTO.getEmployeeId());
+        leaveRequest.setLeaveType(leaveRequestDTO.getLeaveType());
+        leaveRequest.setRequestReason(leaveRequestDTO.getReason());
+        leaveRequest.setFromDate(leaveRequestDTO.getFromDate());
+        leaveRequest.setToDate(leaveRequestDTO.getToDate());
+        leaveRequest.setRequestStatus("InProgress");
+
+        // Save the leave request
+        leaveRequestRepo.save(leaveRequest);
+ 
+    }
+
+    @Override
+    public List<ListLeaveRequestDto> getAllLeaveRequests(String empId) {
+
+        List<LeaveRequest> listOfLeaveReq = leaveRequestRepo.findByEmployeeId(empId);
+
+        return listOfLeaveReq.stream()
+        .map(leaveRequest -> {
+            ListLeaveRequestDto dto = new ListLeaveRequestDto();
+            dto.setRequestId(String.valueOf(leaveRequest.getRequestId()));
+            dto.setRequestReason(leaveRequest.getRequestReason());
+            dto.setRequestStatus(leaveRequest.getRequestStatus());
+            dto.setFromDate(leaveRequest.getFromDate());
+            dto.setToDate(leaveRequest.getToDate());
+            return dto;
+        })
+        .collect(Collectors.toList());
+
+
     }
 
 

@@ -6,6 +6,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
 import com.group1.schedhub.dto.EmployeeRequest;
+import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 import com.group1.schedhub.service.AvailabilityService;
 import com.group1.schedhub.service.EmployeeCredentialsService;
@@ -16,6 +18,7 @@ import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails.Addre
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -198,14 +201,16 @@ public class EmployeeController implements WebMvcConfigurer {
     }
 
     @PostMapping("/saveSchedule")
-    public ResponseEntity<?> saveSchedule(@RequestBody List<Map<String, List<String>>> scheduleData) {
+    public ResponseEntity<?> saveSchedule(@RequestBody List<Map<String, List<Map<String, String>>>> scheduleData) {
         try {
             for (int i = 0; i < scheduleData.size(); i++) {
-                Map<String, List<String>> daySchedule = scheduleData.get(i);
+                Map<String, List<Map<String, String>>> daySchedule = scheduleData.get(i);
                 for (String shift : daySchedule.keySet()) {
-                    List<String> employees = daySchedule.get(shift);
-                    for (String employee : employees) {
-                        employeeService.saveSchedule(employee, i, shift);
+                    List<Map<String, String>> employees = daySchedule.get(shift);
+                    for (Map<String, String> employee : employees) {
+                        String employeeId = employee.get("employeeId");
+                        String employeeName = employee.get("employeeName");
+                        employeeService.saveSchedule(employeeId, employeeName, i, shift);
                     }
                 }
             }
@@ -215,4 +220,35 @@ public class EmployeeController implements WebMvcConfigurer {
         }
     }
 
+    @GetMapping("/shift-schedule/{employeeId}")
+    public ResponseEntity<Map<String, String>> getShiftScheduleByEmployeeId(@PathVariable String employeeId) {
+        Map<String, String> shiftSchedule = employeeService.getShiftScheduleByEmployeeId(employeeId);
+        if (shiftSchedule.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(shiftSchedule);
+        }
+    }
+
+    @PostMapping("/leaveRequest")
+    public ResponseEntity<String> saveLeaveRequest(@RequestBody LeaveRequestDto leaveRequestDTO) {
+        try {
+            employeeService.saveLeave(leaveRequestDTO);
+
+            return new ResponseEntity<>("Leave request submitted successfully", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to submit leave request", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/listLeaveRequest")
+    public ResponseEntity<List<ListLeaveRequestDto>> listLeaveRequest(@RequestParam String empId) {
+        try {
+            List<ListLeaveRequestDto> leaveRequests = employeeService.getAllLeaveRequests(empId);
+            return new ResponseEntity<>(leaveRequests, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
 }

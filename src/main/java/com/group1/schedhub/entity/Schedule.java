@@ -31,6 +31,9 @@ public class Schedule {
     @Column(name = "scheduleid")
     private int scheduleId;
 
+    @Column(name = "empid")
+    private String employeeId;
+
     @Column(name = "employeename", length = 255)
     private String employeeName;
 

@@ -1,9 +1,12 @@
 package com.group1.schedhub.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.group1.schedhub.dto.AttendanceRecordDto;
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 
 /*
@@ -31,6 +34,11 @@ public interface EmployeeCredentialsService {
 
     void deleteEmployee(String empId);
 
-    void saveSchedule(String empName, int dayOfWeek, String shiftType);
+    void saveSchedule(String empId, String empName, int dayOfWeek, String shiftType);
 
+    Map<String, String> getShiftScheduleByEmployeeId(String employeeId);
+
+    void saveLeave(LeaveRequestDto leaveRequestDTO);
+
+    List<ListLeaveRequestDto> getAllLeaveRequests(String empId);
 }
