@@ -1,28 +1,12 @@
 import React, { useEffect, useState } from "react";
-import axios from 'axios';
 import "./schedulestyle.css";
+import axios from 'axios';
+import data from "./employeeData";
 
-const Schedule = () => {
+
+const ShiftSchedule = () => {
     const [schedule, setSchedule] = useState([]);
     const [scheduleStarted, setScheduleStarted] = useState(false);
-
-    const data = [
-        { employeeId: 1, employeeName: "Alice Johnson", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3"] },
-        { employeeId: 2, employeeName: "Bob Smith", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 2", "Shift 3"] },
-        { employeeId: 3, employeeName: "Carol Lee", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 4, employeeName: "David Brown", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3"] },
-        { employeeId: 5, employeeName: "Emily Clark", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3"] },
-        { employeeId: 6, employeeName: "Frank Adams", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 7, employeeName: "Grace Turner", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 8, employeeName: "Grace Adams", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 2", "Shift 3"] },
-        { employeeId: 9, employeeName: "Henry White", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 2", "Shift 3"] },
-        { employeeId: 10, employeeName: "Isabel Garcia", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 11, employeeName: "Jack Taylor", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 12, employeeName: "Karen Hill", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 2", "Shift 3"] },
-        { employeeId: 13, employeeName: "Leo Garcia", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3"] },
-        { employeeId: 14, employeeName: "Megan Adams", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-        { employeeId: 15, employeeName: "Nathan White", shiftsAvailable: ["Shift 1", "Shift 1", "Shift 2", "Shift 2", "Shift 3", "Shift 3", "Shift 3"] },
-    ];
 
     const days = [
         "Monday",
@@ -63,15 +47,61 @@ const Schedule = () => {
             }
 
             for (let shiftIndex = 0; shiftIndex < shifts.length; shiftIndex++) {
-                const allEmployees = shuffleArray([...availableEmployees]); // Shuffle all employees for each shift
-                const selectedEmployees = allEmployees.slice(0, maxEmployeesPerShift);
-                daySchedule[shifts[shiftIndex]] = selectedEmployees.map(emp => emp.employeeName);
+                const selectedEmployees = [];
+                let remainingShiftEmployees = availableEmployees.filter(
+                    (employee) =>
+                        employee.shiftsAvailable[dayIndex] === shifts[shiftIndex]
+                );
+
+                while (
+                    selectedEmployees.length < maxEmployeesPerShift &&
+                    remainingShiftEmployees.length > 0
+                ) {
+                    const shuffledEmployees = shuffleArray([...remainingShiftEmployees]); // Shuffle remaining employees for each shift
+                    const eligibleEmployees = shuffledEmployees.filter(
+                        (employee) =>
+                            calculateTotalHours(employee, dayIndex) <
+                            employee.maxHoursPerWeek &&
+                            countShiftsInDay(employee, dayIndex) < maxShiftsPerDay &&
+                            !selectedEmployees.includes(employee)
+                    );
+
+                    if (eligibleEmployees.length === 0) break;
+
+                    const employeeToAdd = eligibleEmployees[0];
+                    selectedEmployees.push(employeeToAdd);
+                    remainingShiftEmployees = remainingShiftEmployees.filter(
+                        (employee) => employee !== employeeToAdd
+                    );
+                }
+
+                daySchedule[shifts[shiftIndex]] = selectedEmployees;
+            }
+
+            // Check for remaining available employees and assign them only if they are available for the empty shifts
+            const remainingAvailableEmployees = availableEmployees.filter(
+                (employee) => !Object.values(daySchedule).flat().includes(employee)
+            );
+
+            for (const shift in daySchedule) {
+                if (daySchedule[shift].length === 0) {
+                    const remainingEmployee = remainingAvailableEmployees.find(
+                        (employee) => employee.shiftsAvailable[dayIndex] === shift
+                    );
+                    daySchedule[shift] = remainingEmployee
+                        ? [remainingEmployee]
+                        : ["No employee available"];
+                }
             }
 
             newSchedule.push(daySchedule);
         }
 
         setSchedule(newSchedule);
+    };
+
+    const handleStartSchedule = () => {
+        setScheduleStarted(true);
     };
 
     useEffect(() => {
@@ -92,12 +122,29 @@ const Schedule = () => {
         return employee.shiftsAvailable[dayIndex] === "NA" ? 0 : 1;
     };
 
-    const handleStartSchedule = () => {
-        setScheduleStarted(true);
+    const generateScheduleDataForBackend = () => {
+        const scheduleDataForBackend = [];
+        for (const dayIndex in days) {
+            const daySchedule = {};
+            for (const shift of shifts) {
+                const employees = schedule[dayIndex] && schedule[dayIndex][shift]
+                    ? schedule[dayIndex][shift].map(employee => ({
+                        employeeId: employee.employeeId,
+                        employeeName: employee.employeeName
+                    }))
+                    : [];
+                daySchedule[shift] = employees;
+            }
+            scheduleDataForBackend.push(daySchedule);
+        }
+        return scheduleDataForBackend;
     };
 
+
     const handleSaveSchedule = () => {
-        axios.post('http://localhost:8080/api/employees/saveSchedule', schedule)
+        const scheduleDataForBackend = generateScheduleDataForBackend();
+
+        axios.post('http://localhost:8080/api/employees/saveSchedule', scheduleDataForBackend)
             .then(response => {
                 console.log("Schedule saved successfully:", response.data);
                 // Optionally, show a success message to the user
@@ -110,6 +157,7 @@ const Schedule = () => {
 
     return (
         <div className="main">
+            <h2>Shift Schedule</h2>
             <button className="btn btn-primary" onClick={handleStartSchedule} disabled={scheduleStarted}>
                 Start Schedule
             </button>
@@ -117,7 +165,7 @@ const Schedule = () => {
             <button className="btn btn-success" onClick={handleSaveSchedule}>
                 Save
             </button>
-            <h2>Shift Schedule</h2>
+
             <table>
                 <thead>
                     <tr>
@@ -134,8 +182,8 @@ const Schedule = () => {
                             {shifts.map((shift, shiftIndex) => (
                                 <td key={shiftIndex}>
                                     {schedule[dayIndex] &&
-                                        schedule[dayIndex][shift].map((employee, index) => (
-                                            <p key={index}>{employee}</p>
+                                        schedule[dayIndex][shift].map((employee) => (
+                                            <p key={employee.employeeId}>{employee.employeeName}</p>
                                         ))}
                                 </td>
                             ))}
@@ -147,4 +195,4 @@ const Schedule = () => {
     );
 };
 
-export default Schedule;
+export default ShiftSchedule;
