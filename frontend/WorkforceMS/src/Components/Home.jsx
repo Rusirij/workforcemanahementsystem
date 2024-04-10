@@ -13,6 +13,7 @@ const Home = () => {
     const [employeeStartDate, setEmployeeStartDate] = useState(new Date());
     const [clockedIn, setClockedIn] = useState(false);
     const [clockedOut, setClockedOut] = useState(true);
+    const empType = localStorage.getItem('empType');
 
     useEffect(() => {
         const empId = localStorage.getItem('empId');
@@ -46,9 +47,7 @@ const Home = () => {
                 dateTime: clockTime
             });
 
-            // Check if clock-in is successful (status code 200)
             if (response.status === 200) {
-                // If clock-in is successful, set clockedIn to true and clockedOut to false
                 setClockedIn(true);
                 setClockedOut(false);
                 console.log("Clock in successful");
@@ -69,7 +68,7 @@ const Home = () => {
                 empId: empId,
                 dateTime: clockTime
             });
-            // Check if clock-out is successful (status code 200)
+
             if (response.status === 200) {
                 setClockedIn(true);
                 setClockedOut(true);
@@ -127,23 +126,40 @@ const Home = () => {
                 </div>
 
                 <div className="col-md-15 col-lg-3 position-relative">
-                    <div className="position-absolute bottom-0 end-2.5 ">
-                        <label htmlFor="reportTo" className="form-label">
-                            Report To
-                        </label>
-                        <input type="text" className="form-control" id="reportTo" placeholder="Enter Manager Name" />
+                    {!empType || empType !== 'Manager' && (
+                        <div className="position-absolute bottom-0 end-2.5">
+                            <label htmlFor="reportTo" className="form-label">
+                                Report To
+                            </label>
+                            <input type="text" className="form-control" id="reportTo" placeholder="Johnson" />
 
-                        <label htmlFor="employeeStartDate" className="form-label">
-                            Employee Start Date
-                        </label>
-                        <div className="col-md-2 col-lg-12" >
-                            <DatePicker
-                                selected={employeeStartDate}
-                                onChange={(date) => setEmployeeStartDate(date)}
-                                className="form-control"
-                            />
+                            <label htmlFor="employeeStartDate" className="form-label">
+                                Employee Start Date
+                            </label>
+                            <div>
+                                <DatePicker
+                                    selected={employeeStartDate}
+                                    onChange={(date) => setEmployeeStartDate(date)}
+                                    className="form-control"
+                                />
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {empType === 'Manager' && (
+                        <div className="position-absolute bottom-0 end-2.5">
+                            <label htmlFor="employeeStartDate" className="form-label">
+                                Employee Start Date
+                            </label>
+                            <div>
+                                <DatePicker
+                                    selected={employeeStartDate}
+                                    onChange={(date) => setEmployeeStartDate(date)}
+                                    className="form-control"
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="col-md-12 text-end">

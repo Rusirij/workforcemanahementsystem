@@ -1,48 +1,77 @@
-import React, { useState } from 'react';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 
 const LeaveRequests = () => {
     const [approvalStatuses, setApprovalStatuses] = useState({});
     const [replacementValues, setReplacementValues] = useState({});
+    const [leaveRequests, setLeaveRequests] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [perPage] = useState(5); // Change this to set the number of entries per page
+    const [perPage] = useState(5);
+    const [currentDate, setCurrentDate] = useState(new Date().toLocaleDateString());
+    const [loading, setLoading] = useState(true);
+    const [names, setNames] = useState([]);
 
-    const leaveRequests = [
-        { name: 'Theresa Webb', leaveDate: '18-03-2024', leaveType: 'Sick' },
-        { name: 'Annette Black', leaveDate: '20-03-2024', leaveType: 'Sick' },
-        // Add more leave requests
-    ];
+    useEffect(() => {
+        axios.get('http://localhost:8080/api/employees/listLeaveRequestManager')
+            .then(response => {
+                const filteredData = response.data.filter(request => request.approvedStatus !== "Approved");
+                setLeaveRequests(filteredData);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error fetching leave details:', error);
+                setLoading(false);
+            });
 
-    // Sample employees for demonstration
-    const employees = ['Jeremy Neigh', 'Kathryn Murphy', 'Jane Cooper'];
+        axios.get('http://localhost:8080/api/employees/getNames')
+            .then(response => {
+                setNames(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching names:', error);
+            });
+    }, []);
 
-    // Handle approval status change
-    const handleApprovalChange = (employee, value) => {
+    const handleApprovalChange = (reqId, value) => {
         setApprovalStatuses(prevState => ({
             ...prevState,
-            [employee]: value
+            [reqId]: value
         }));
     };
 
-    // Handle replacement change
-    const handleReplacementChange = (employee, value) => {
+    const handleReplacementChange = (reqId, value) => {
         setReplacementValues(prevState => ({
             ...prevState,
-            [employee]: value
+            [reqId]: value
         }));
     };
 
-    // Handle form submission for individual employee
-    const handleSubmit = (employee) => {
-        console.log(`Employee: ${employee}, Approval Status: ${approvalStatuses[employee]}, Replacement: ${replacementValues[employee]}`);
+    const handleSubmit = (request) => {
+        const dataToUpdate = {
+            reqId: request.reqId,
+            name: request.name,
+            fromDate: request.fromDate,
+            toDate: request.toDate,
+            leaveType: request.leaveType,
+            reason: request.reason,
+            approvalStatus: approvalStatuses[request.reqId],
+            replacement: replacementValues[request.reqId]
+        };
+
+        axios.post('http://localhost:8080/api/employees/updateLeave', dataToUpdate)
+            .then(response => {
+                console.log("Leave updated successfully:", response.data);
+            })
+            .catch(error => {
+                console.error('Error updating leave:', error);
+            });
     };
 
-    // Pagination
-    const totalPages = Math.ceil(leaveRequests.length / perPage);
+    const totalPages = Math.ceil((leaveRequests?.length || 0) / perPage);
     const indexOfLastEntry = currentPage * perPage;
     const indexOfFirstEntry = indexOfLastEntry - perPage;
-    const currentEntries = leaveRequests.slice(indexOfFirstEntry, indexOfLastEntry);
+    const currentEntries = leaveRequests?.slice(indexOfFirstEntry, indexOfLastEntry) || [];
 
-    // Change page
     const handlePageChange = (page) => {
         setCurrentPage(page);
     };
@@ -50,58 +79,72 @@ const LeaveRequests = () => {
     return (
         <div className="px-5 mt-3">
             <h3>Leave Requests</h3>
-            <p>25 March, 2024</p>
-            <table className="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Leave Date</th>
-                        <th>Leave Type</th>
-                        <th>Approve/Reject</th>
-                        <th>Replacement</th>
-                        <th>Submit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentEntries.map((request, index) => (
-                        <tr key={index}>
-                            <td>{request.name}</td>
-                            <td>{request.leaveDate}</td>
-                            <td>{request.leaveType}</td>
-                            <td>
-                                <select value={approvalStatuses[request.name] || ''} onChange={(e) => handleApprovalChange(request.name, e.target.value)}>
-                                    <option value="">Select</option>
-                                    <option value="Approve">Approve</option>
-                                    <option value="Reject">Reject</option>
-                                </select>
-                            </td>
-                            <td>
-                                <select value={replacementValues[request.name] || ''} onChange={(e) => handleReplacementChange(request.name, e.target.value)}>
-                                    <option value="">Select</option>
-                                    {employees.map((employee, index) => (
-                                        <option key={index} value={employee}>{employee}</option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td>
-                                <button className="btn btn-primary" onClick={() => handleSubmit(request.name)}>Submit</button>
-                            </td>
+            <label htmlFor="todayTime" className="form-label">Today's Date: {currentDate}</label>
+            {loading ? (
+                <p>Loading...</p>
+            ) : leaveRequests?.length === 0 ? (
+                <p>No leave requests found.</p>
+            ) : (
+                <table className="table">
+                    <thead>
+                        <tr>
+                            <th>Req Id</th>
+                            <th>Name</th>
+                            <th>Leave From</th>
+                            <th>Leave To</th>
+                            <th>Leave Type</th>
+                            <th>Reason</th>
+                            <th>Approve/Reject</th>
+                            <th>Replacement</th>
+                            <th>Submit</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <div className="pagination">
-                <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
-                <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
-                <span>Page:</span>
-                <select value={currentPage} onChange={(e) => handlePageChange(parseInt(e.target.value))}>
-                    {[...Array(totalPages).keys()].map((page) => (
-                        <option key={page + 1} value={page + 1}>{page + 1}</option>
-                    ))}
-                </select>
-                <span>of {totalPages}</span>
-                <span>{perPage}</span>
-            </div>
+                    </thead>
+                    <tbody>
+                        {currentEntries.map((request, index) => (
+                            <tr key={index}>
+                                <td>{request.reqId}</td>
+                                <td>{request.name}</td>
+                                <td>{request.fromDate}</td>
+                                <td>{request.toDate}</td>
+                                <td>{request.leaveType}</td>
+                                <td>{request.reason}</td>
+                                <td>
+                                    <select value={approvalStatuses[request.reqId] || ''} onChange={(e) => handleApprovalChange(request.reqId, e.target.value)}>
+                                        <option value="">Select</option>
+                                        <option value="Approved">Approved</option>
+                                        <option value="Rejected">Rejected</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select value={replacementValues[request.reqId] || ''} onChange={(e) => handleReplacementChange(request.reqId, e.target.value)}>
+                                        <option value="">Select</option>
+                                        {names && Object.values(names).map((item, index) => (
+                                            <option key={index} value={item.employeeName}>{item.employeeName}</option>
+                                        ))}
+                                    </select>
+                                </td>
+                                <td>
+                                    <button className="btn btn-primary" onClick={() => handleSubmit(request)}>Submit</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+            {leaveRequests?.length > perPage && (
+                <div className="pagination">
+                    <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
+                    <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+                    <span>Page:</span>
+                    <select value={currentPage} onChange={(e) => handlePageChange(parseInt(e.target.value))}>
+                        {[...Array(totalPages).keys()].map((page) => (
+                            <option key={page + 1} value={page + 1}>{page + 1}</option>
+                        ))}
+                    </select>
+                    <span>of {totalPages}</span>
+                    <span>{perPage}</span>
+                </div>
+            )}
         </div>
     );
 };
