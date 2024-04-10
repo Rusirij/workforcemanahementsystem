@@ -1,37 +1,63 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link component from react-router-dom
-import './applyleave.css'; // Import CSS file for styling
-import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-
-
+import { Link } from 'react-router-dom';
+import axios from 'axios'; // Import Axios for making HTTP requests
+import './applyleave.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const ApplyLeave = () => {
-    const currentDate = new Date().toLocaleDateString();
 
+    const currentDate = new Date().toLocaleDateString();
 
     const [leaveType, setLeaveType] = useState('');
     const [reason, setReason] = useState('');
-    const [fromDate, setFromDate] = useState(null);
-    const [toDate, setToDate] = useState(null);
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
+    const empId = localStorage.getItem('empId');
 
-    const handleSubmit = () => {
-        // Handle form submission logic here
-        console.log('Leave Type:', leaveType);
-        console.log('Reason:', reason);
-        console.log('From Date:', fromDate);
-        console.log('To Date:', toDate);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
+        // Prepare the data object to send to the backend
+        const leaveRequestData = {
+            employeeId: empId,
+            leaveType: leaveType,
+            reason: reason,
+            fromDate: fromDate,
+            toDate: toDate
+        };
+
+        try {
+            const response = await axios.post('http://localhost:8080/api/employees/leaveRequest', leaveRequestData);
+
+            // Check if the response status indicates success
+            if (response.status >= 200 && response.status < 300) {
+                // Handle success response here
+                console.log('Leave request submitted successfully:', response.data);
+
+                // Reset the form fields after successful submission
+                setLeaveType('');
+                setReason('');
+                setFromDate('');
+                setToDate('');
+            } else {
+                // Handle other status codes (optional)
+                console.error('Error submitting leave request:', response.statusText);
+            }
+        } catch (error) {
+            // Handle error response here
+            console.error('Error submitting leave request:', error);
+        }
     };
 
     const handleCancel = () => {
         // Handle cancel logic here
     };
 
-
     return (
         <div className="px-5 mt-3">
             <h2> Apply Leave </h2>
             <p className="current-date" style={{ marginBottom: '20px' }}>{currentDate}</p>
-
 
             <form onSubmit={handleSubmit}>
                 <div>
@@ -47,7 +73,7 @@ const ApplyLeave = () => {
                     <label htmlFor="reason">Reason:</label>
                     <textarea id="reason" value={reason} onChange={(e) => setReason(e.target.value)} />
                 </div>
-                <div class="date-picker-container">
+                <div className="date-picker-container">
                     <label htmlFor="fromDate">From:</label>
                     <input type="date" id="fromDate" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
 
@@ -57,18 +83,16 @@ const ApplyLeave = () => {
                 <br></br>
                 <div>
                     <button type="submit" className="btn btn-primary">Submit for Approval</button>
-                    <button type="button" onClick={handleCancel} className="btn btn-secondary" style={{ marginLeft: '10px' }} >Cancel</button>
+                    <button type="button" onClick={handleCancel} className="btn btn-secondary" style={{ marginLeft: '10px' }}>Cancel</button>
                     <button type="button" className="btn btn-success" style={{ marginLeft: '30px' }}>
-                        <Link to="/apply_leave/submittedRequests" style={{ color: 'white', textDecoration: 'none' }}>
+                        <Link to="/dashboard/apply_leave/submittedRequests" style={{ color: 'white', textDecoration: 'none' }}>
                             Submitted Requests
                         </Link>
                     </button>
                 </div>
             </form>
         </div>
-
-
     )
 }
 
-export default ApplyLeave
+export default ApplyLeave;

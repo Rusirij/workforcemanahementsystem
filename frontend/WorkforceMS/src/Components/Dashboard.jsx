@@ -37,7 +37,7 @@ const Dashboard = () => {
                     </li>
                     <li className="w-100">
                         <Link to="/dashboard/availability" className="nav-link px-0 align-middle text-white">
-                            <i className="fs-4 bi-columns ms-2"></i>
+                            <i className="fs-4 bi bi-check-circle-fill text-success ms-2"></i>
                             <span className="ms-2 d-none d-sm-inline">Availability</span>
                         </Link>
                     </li>
@@ -55,6 +55,12 @@ const Dashboard = () => {
                     </li>
                     <li className="w-100">
                         <Link to="/dashboard/apply_leave" className="nav-link px-0 align-middle text-white">
+                            <i className="fs-4 bi-umbrella ms-2"></i>
+                            <span className="ms-2 d-none d-sm-inline">Apply Leave</span>
+                        </Link>
+                    </li>
+                    <li className="w-100" style={{ display: 'none' }}>
+                        <Link to="/dashboard/apply_leave/submittedRequests" className="nav-link px-0 align-middle text-white">
                             <i className="fs-4 bi-umbrella ms-2"></i>
                             <span className="ms-2 d-none d-sm-inline">Apply Leave</span>
                         </Link>

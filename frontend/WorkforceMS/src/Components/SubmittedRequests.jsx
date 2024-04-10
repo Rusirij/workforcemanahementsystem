@@ -1,28 +1,50 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const SubmittedRequests = () => {
+    const [leaveRequests, setLeaveRequests] = useState([]);
+    const employeeId = localStorage.getItem('empId'); // Retrieve employee ID from local storage
+
+    useEffect(() => {
+        fetchLeaveRequests();
+    }, []);
+
+    const fetchLeaveRequests = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/employees/listLeaveRequest', {
+                params: { empId: employeeId } // Pass employee ID as a query parameter
+            });
+            setLeaveRequests(response.data);
+        } catch (error) {
+            console.error('Error fetching leave requests:', error);
+        }
+    };
+
     return (
-        <div className="container">
+        <div className="px-5 mt-3">
             <h2>Submitted Requests</h2>
-            <div className="card">
-                <div className="card-body">
-                    <h5 className="card-title">Leave Request 1</h5>
-                    <p className="card-text">Type: Annual</p>
-                    <p className="card-text">Reason: Vacation</p>
-                    <p className="card-text">From: 2024-04-15</p>
-                    <p className="card-text">To: 2024-04-20</p>
-                </div>
-            </div>
-            <div className="card mt-3">
-                <div className="card-body">
-                    <h5 className="card-title">Leave Request 2</h5>
-                    <p className="card-text">Type: Sick</p>
-                    <p className="card-text">Reason: Medical Leave</p>
-                    <p className="card-text">From: 2024-04-10</p>
-                    <p className="card-text">To: 2024-04-12</p>
-                </div>
-            </div>
-            {/* Add more cards for additional submitted requests */}
+            <table className="table">
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Reason</th>
+                        <th>From Date</th>
+                        <th>To Date</th>
+                        <th>Approval Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {leaveRequests.map(request => (
+                        <tr key={request.requestId}>
+                            <td>{request.requestId}</td>
+                            <td>{request.requestReason}</td>
+                            <td>{request.fromDate}</td>
+                            <td>{request.toDate}</td>
+                            <td>{request.requestStatus}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };
