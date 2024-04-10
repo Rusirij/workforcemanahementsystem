@@ -5,8 +5,11 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.EmployeeNameDto;
 import com.group1.schedhub.dto.EmployeeRequest;
 import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.LeaveRequestsManagerDto;
+import com.group1.schedhub.dto.LeaveResponseManagerDto;
 import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 import com.group1.schedhub.service.AvailabilityService;
@@ -250,5 +253,44 @@ public class EmployeeController implements WebMvcConfigurer {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @GetMapping("/listLeaveRequestManager")
+    public ResponseEntity<List<LeaveRequestsManagerDto>> listLeaveRequest() {
+        try {
+            List<LeaveRequestsManagerDto> leaveRequestsManager = employeeService.getAllLeaveRequestsForManager();
+            return new ResponseEntity<>(leaveRequestsManager, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
+    /**
+     * Get all the names of the employees for the manager leave response
+     * @return
+     */
+    @GetMapping("/getNames")
+    public ResponseEntity<List<EmployeeNameDto>> listAllEmployees() {
+        try {
+            List<EmployeeNameDto> listEmployees = employeeService.getAllEmployees();
+            return new ResponseEntity<>(listEmployees, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Update Leave Request by the manager screen
+     * 
+     * @param leaveRequest
+     * @return
+     */
+    @PostMapping("/updateLeave")
+    public ResponseEntity<String> updateLeave(@RequestBody LeaveResponseManagerDto leaveRequest) {
+        try {
+            employeeService.updateLeave(leaveRequest);
+            return new ResponseEntity<>("Leave request updated successfully", HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating leave: " + e.getMessage());
+        }
+    }
 }

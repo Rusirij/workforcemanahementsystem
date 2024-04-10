@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.EmployeeNameDto;
 import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.LeaveRequestsManagerDto;
+import com.group1.schedhub.dto.LeaveResponseManagerDto;
 import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 import com.group1.schedhub.entity.AttendanceRecord;
@@ -232,6 +235,55 @@ public class EmployeeCredentialsServiceImpl implements EmployeeCredentialsServic
 
     }
 
+    @Override
+    public List<LeaveRequestsManagerDto> getAllLeaveRequestsForManager() {
+        List<LeaveRequest> listOfLeaveReqForManager = leaveRequestRepo.findAll();
+
+        return listOfLeaveReqForManager.stream()
+                .map(leaveRequest -> {
+                    String empId = leaveRequest.getEmployeeId();
+                    Profile profile = profileRepository.findById(empId).orElse(null);
+                    if (profile != null) {
+                        LeaveRequestsManagerDto dto = new LeaveRequestsManagerDto();
+                        dto.setReqId(String.valueOf(leaveRequest.getRequestId()));
+                        dto.setName(profile.getEmployeeName());
+                        dto.setFromDate(leaveRequest.getFromDate());
+                        dto.setToDate(leaveRequest.getToDate());
+                        dto.setLeaveType(leaveRequest.getLeaveType());
+                        dto.setReason(leaveRequest.getRequestReason());
+                        dto.setApprovedStatus(leaveRequest.getRequestStatus());
+                        return dto;
+                    }
+                    return null;
+                })
+                .filter(dto -> dto != null) // Filter out null entries
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<EmployeeNameDto> getAllEmployees() {
+        List<Profile> profiles = profileRepository.findAll();
+        
+        List<EmployeeNameDto> employeeNames = profiles.stream()
+                .map(profile -> {
+                    EmployeeNameDto dto = new EmployeeNameDto();
+                    dto.setEmployeeName(profile.getEmployeeName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    
+        return employeeNames;
+    }
+
+    @Override
+    public void updateLeave(LeaveResponseManagerDto dto) {
+        LeaveRequest leaveRequest = leaveRequestRepo.findById(Integer.valueOf(dto.getReqId())).orElse(null);
+        leaveRequest.setAssignTo(dto.getReplacement());
+        leaveRequest.setRequestStatus(dto.getApprovalStatus());
+
+        leaveRequestRepo.save(leaveRequest);
+        
+    }
 
     
 }

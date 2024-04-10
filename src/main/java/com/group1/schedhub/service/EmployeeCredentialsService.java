@@ -5,7 +5,10 @@ import java.util.Map;
 
 import com.group1.schedhub.dto.AttendanceRecordDto;
 import com.group1.schedhub.dto.EmployeeCredentialsDto;
+import com.group1.schedhub.dto.EmployeeNameDto;
 import com.group1.schedhub.dto.LeaveRequestDto;
+import com.group1.schedhub.dto.LeaveRequestsManagerDto;
+import com.group1.schedhub.dto.LeaveResponseManagerDto;
 import com.group1.schedhub.dto.ListLeaveRequestDto;
 import com.group1.schedhub.dto.ProfileDto;
 
@@ -41,4 +44,11 @@ public interface EmployeeCredentialsService {
     void saveLeave(LeaveRequestDto leaveRequestDTO);
 
     List<ListLeaveRequestDto> getAllLeaveRequests(String empId);
+
+    List<LeaveRequestsManagerDto> getAllLeaveRequestsForManager();
+
+    List<EmployeeNameDto> getAllEmployees();
+
+    void updateLeave(LeaveResponseManagerDto dto);
+
 }
